@@ -8,6 +8,10 @@ class Service<M extends Objection.Model> {
     return this._DAO.getAll();
   }
 
+  async getRelatedPurchases(id: string) {
+    return this._DAO.getRelatedPurchases(id);
+  }
+
   async insert(obj: PartialModelObject<M> | PartialModelObject<M>[]) {
     return this._DAO.insert(obj);
   }
