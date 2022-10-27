@@ -9,6 +9,14 @@ class DAO<T extends Objection.Model> {
     return this.model.query() as QueryBuilder<T>;
   }
 
+  async getRelatedPurchases(id: string) {
+    return this.model
+      .relatedQuery("purchases")
+      .for(id)
+      .where("customerId", id)
+      .orderBy("date");
+  }
+
   // NOTE: The return value of the insert query only contains the properties given to the insert method plus the identifier. 
   // This is because we don't make an additional fetch query after the insert. Using postgres you can chain returning('*') to the query to get all properties
   // NOTE: As of 2022, only Postgres supports passing an array of objects to insert
