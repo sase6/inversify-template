@@ -2,7 +2,7 @@ import { Knex } from "knex";
 
 export const up = async (knex: Knex) => {
   await knex.schema.createTable("promotions", (table) => {
-    table.uuid("id").defaultTo(knex.raw("uuid_generate_v4()"));
+    table.string("id");
     table.timestamps(true, true);
     table.boolean("isFinished").defaultTo(false);
     table.integer("year").defaultTo(0);

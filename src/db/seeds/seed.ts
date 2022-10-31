@@ -53,7 +53,7 @@ export const seed = async (knex: Knex) => {
   // promotions
   const promotions = [];
   promotions.push({
-    id: 1,
+    id: "6MonthPurchase",
     month: 6
   });
 
