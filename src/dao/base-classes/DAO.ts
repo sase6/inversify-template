@@ -20,6 +20,7 @@ class DAO<T extends Objection.Model> {
   async getRelatedPets(id: string) {
     return this.model
     .relatedQuery("pets")
+    .for(id)
     .where("ownerId", id);
   }
 
