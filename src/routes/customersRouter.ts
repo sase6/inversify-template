@@ -7,6 +7,6 @@ const controller = container.resolve(Controller);
 const customersRouter = express.Router();
 
 customersRouter.get("/", controller.getAll);
-customersRouter.get("/:customerId/gifts", controller.getGift);
+customersRouter.get("/:customerId/gifts", controller.getPetGift);
 
 export default customersRouter;
