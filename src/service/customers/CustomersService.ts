@@ -1,7 +1,9 @@
 import { injectable } from "inversify";
 import Service from "../base-classes/Service";
+import { parse as uuidParse } from "uuid";
 import CustomersDAO from "../../dao/customers/CustomersDAO";
 import PromotionDAO from "../../dao/promotions/PromotionsDAO";
+import RedeemedPromotionDAO from "../../dao/promotions/RedeemedPromotionsDAO";
 import Customer from "../../model/Customer";
 
 interface promotionDate {
@@ -12,9 +14,10 @@ interface promotionDate {
 
 @injectable()
 class CustomersService extends Service<Customer> {
-  constructor(protected readonly _customersDAO: CustomersDAO, protected readonly _promotionsDAO: PromotionDAO) {
+  constructor(protected readonly _customersDAO: CustomersDAO, protected readonly _promotionsDAO: PromotionDAO, protected readonly _redeemedPromotionsDAO: RedeemedPromotionDAO) {
     super(_customersDAO);
     this._promotionsDAO = _promotionsDAO;
+    this._redeemedPromotionsDAO = _redeemedPromotionsDAO;
   }
 
   async getRelatedPurchases(id: string) {
@@ -23,6 +26,10 @@ class CustomersService extends Service<Customer> {
 
   async getRelatedPets(id: string) {
     return this._customersDAO.getRelatedPets(id);
+  }
+
+  async getRelatedRedeemedPromotions(customerId: string, promotionId: string) {
+    return this._customersDAO.getRelatedRedeemedPromotions(customerId, promotionId);
   }
 
   async hasPurchaseOlderThan(customerId: string, date: promotionDate) {
@@ -40,28 +47,31 @@ class CustomersService extends Service<Customer> {
   }
 
   async getPetGift(customerId: string, promotionId: string) {
-    const promotion: any = await this._promotionsDAO.findById(promotionId);
+    const promotion: any | undefined = await this._promotionsDAO.findById(promotionId);
     if (promotion === undefined || promotion.isFinished) return null;
     const date: promotionDate = {
       year: promotion.year || 0,
       month: promotion.month || 0,
       day: promotion.day || 0,
     }
-    
-    // // Check if promotion has already been redeemed
-    //   // if it has, return null
+
+    const redeemedPromotions: any = await this.getRelatedRedeemedPromotions(customerId, promotionId);
+    if (redeemedPromotions.length !== 0) return null;
 
     const purchase = await this.hasPurchaseOlderThan(customerId, date);
     if (purchase === null) return null;
 
     const pets = await this.getRelatedPets(customerId);
     const randomIndex = Math.round(Math.random() * (pets.length - 1));
-    const randomPet = pets[randomIndex];
+    const randomPet: any = pets[randomIndex];
     if (randomPet) {
-      // insert a new redeemed_promotion with promotion id and customer id
+      this._redeemedPromotionsDAO.insert({
+        customerId,
+        promotionId
+      });
 
       return {
-        gift: "gift for petType"
+        gift: `${randomPet.species} Gift for ${randomPet.name}`
       };
     }
     return null;
