@@ -5,7 +5,7 @@ import DAO from "../base-classes/DAO";
 @injectable()
 class RedeemedPromotionDAO extends DAO<RedeemedPromotion> {
   constructor(
-    @inject("Promotion")
+    @inject("RedeemedPromotion")
     protected readonly _redeemedPromotion: typeof RedeemedPromotion
   ) {
     super(_redeemedPromotion);
