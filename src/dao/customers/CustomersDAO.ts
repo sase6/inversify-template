@@ -13,6 +13,13 @@ class CustomersDAO extends DAO<Customer> {
   ) {
     super(_customer);
   }
+
+  async getRelatedRedeemedPromotions(customerId: string, promotionId: string) {
+    return this._customer
+      .relatedQuery("redeemed_promotions")
+      .for(customerId)
+      .where("promotionId", promotionId)
+  }
 }
 
 export default CustomersDAO;
