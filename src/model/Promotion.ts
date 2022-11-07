@@ -8,7 +8,6 @@ class Promotion extends Model {
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["isFinished", "year", "month", "day"],
 
       properties: {
         id: { type: "string" },
