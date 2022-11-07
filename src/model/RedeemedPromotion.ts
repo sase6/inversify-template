@@ -1,4 +1,5 @@
 import { Model, QueryContext } from "objection";
+import Customer from "./Customer";
 
 class RedeemedPromotion extends Model {
   static get tableName() {
@@ -12,8 +13,22 @@ class RedeemedPromotion extends Model {
 
       properties: {
         id: { type: "string" },
-        customerId: { type: "uuid"},
+        customerId: { type: "string"},
         promotionId: { type: "string" },
+      },
+    };
+  }
+
+  // This object defines the relations to other models.
+  static get relationMappings() {
+    return {
+      owners: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Customer,
+        join: {
+          from: "redeemed_promotions.customerId",
+          to: "customers.id",
+        },
       },
     };
   }
