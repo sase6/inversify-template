@@ -23,8 +23,10 @@ describe("src :: service :: customers :: CustomersService", () => {
   beforeEach(() => {
     customersDao = sandbox.createStubInstance(CustomersDAO);
     promotionsDao = sandbox.createStubInstance(PromotionDAO);
+    redeemedPromotionsDao = sandbox.createStubInstance(RedeemedPromotionDAO);
     customersDao.getRelatedPurchases = sandbox.stub();
     promotionsDao.findById = sandbox.stub();
+    redeemedPromotionsDao.insert = sandbox.stub();
 
 
     service = new Service(customersDao, promotionsDao, redeemedPromotionsDao);
@@ -190,10 +192,32 @@ describe("src :: service :: customers :: CustomersService", () => {
       // assert
       expect(result).to.deep.equal(null);
     });
+
+    it("should return a gift for a eligible customer", async () => {
+      // arrange
+      const customerId = "123";
+      const promotionId = "6MonthPurchase";
+      const promotionObj: any = {
+        isFinished: false,
+        month: 6
+      };
+      const relatedPurchase: any = {
+        date: (new Date().setMonth(-7))
+      };
+      const relatedPet: any = {
+        species: "dog",
+        name: "berny"
+      };
+      promotionsDao.findById.withArgs("6MonthPurchase").resolves(promotionObj);
+      customersDao.getRelatedRedeemedPromotions.withArgs("123", "6MonthPurchase").resolves([]);
+      customersDao.getRelatedPurchases.withArgs("123").resolves([relatedPurchase]);
+      customersDao.getRelatedPets.withArgs("123").resolves([relatedPet]);
+      redeemedPromotionsDao.insert.withArgs({customerId, promotionId}).resolves();
+      // act
+      const result = await service.getPetGift(customerId, promotionId);
+      // assert
+      expect(result).to.deep.equal({ gift: 'dog Gift for berny' });
+    });
   });
 
-  
-
-  //if no pets return null
-  //return a gift for eligible customers
 });
