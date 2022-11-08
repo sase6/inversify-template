@@ -1,6 +1,6 @@
 import chai from "chai";
 import sinon, { SinonSpy, SinonStubbedInstance } from "sinon";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, request } from "express";
 import Controller from "../CustomersController";
 import Service from "../../service/customers/CustomersService";
 import ApiError from "../../middleware/ApiError";
@@ -19,6 +19,7 @@ describe("src :: controller :: CustomersController", () => {
   beforeEach(() => {
     service = sandbox.createStubInstance(Service);
     service.getAll = sandbox.stub();
+    service.getPetGift = sandbox.stub();
 
     controller = new Controller(service);
 
@@ -60,12 +61,27 @@ describe("src :: controller :: CustomersController", () => {
   });
 
   describe("# getPetGift", () => {
-    context("test context", () => {
-      it("test case", async () => {
-        //
+    context("when there isn't an error", () => {
+      it("calls service.getPetgift()", async () => {
+        // arrange
+        request.params = {customerId: "123"};
+        // act
+        await controller.getPetGift(request as Request, res as Response, next);
+        // assert
+        sandbox.assert.calledOnce(service.getPetGift);
       });
     });
 
-    // Context 2
+    context("When there is an error", () => {
+      it("calls next with with ApiError.internal", async () => {
+        // arrange
+        service.getPetGift.rejects(new Error("error"));
+        // act
+        await controller.getPetGift(req as Request, res as Response, next);
+        // assert
+        sandbox.assert.calledOnce(next);
+        sandbox.assert.calledWith(next, sandbox.match.instanceOf(ApiError));
+      });
+    });
   });
 });
