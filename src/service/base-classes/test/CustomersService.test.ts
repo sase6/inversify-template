@@ -92,21 +92,21 @@ describe("src :: service :: customers :: CustomersService", () => {
     });
 
     it("should return a purchase a customer made more than 6 months ago", async () => {
-        // arrange
-        const customerId = "123";
-        const exampleDate = new Date();
-        const dummyDateObj = {year: 0, month: 6, day: 0};
-        exampleDate.setMonth(-7);
-        const purchaseDate: any = {
-          date: exampleDate
-        };
-        customersDao.getRelatedPurchases.withArgs("123").resolves([purchaseDate]);
-        // act
-        const result = await service.hasPurchaseOlderThan(customerId, dummyDateObj);
-        // assert
-        sandbox.assert.calledOnce(customersDao.getRelatedPurchases);
-        expect(result).to.deep.equal({date: exampleDate});
-      });
+      // arrange
+      const customerId = "123";
+      const exampleDate = new Date();
+      const dummyDateObj = {year: 0, month: 6, day: 0};
+      exampleDate.setMonth(-7);
+      const purchaseDate: any = {
+        date: exampleDate
+      };
+      customersDao.getRelatedPurchases.withArgs("123").resolves([purchaseDate]);
+      // act
+      const result = await service.hasPurchaseOlderThan(customerId, dummyDateObj);
+      // assert
+      sandbox.assert.calledOnce(customersDao.getRelatedPurchases);
+      expect(result).to.deep.equal({date: exampleDate});
+    });
   });
 
   describe("# getPetGift", () => {
@@ -136,26 +136,41 @@ describe("src :: service :: customers :: CustomersService", () => {
     });
 
     it("should return null when a promotion has been redeemed", async () => {
-        // arrange
-        const customerId = "123";
-        const promotionId = "6MonthPurchase";
-        const promotionObj: any = {
-          isFinished: false,
-        };
-        const redeemedPromotion: any = {
-          customerId, promotionId
-        };
-        promotionsDao.findById.withArgs("6MonthPurchase").resolves(promotionObj);
-        customersDao.getRelatedRedeemedPromotions.withArgs("123", "6MonthPurchase").resolves([redeemedPromotion]);
-        // act
-        const result = await service.getPetGift(customerId, promotionId);
-        // assert
-        expect(result).to.deep.equal(null);
-      });
+      // arrange
+      const customerId = "123";
+      const promotionId = "6MonthPurchase";
+      const promotionObj: any = {
+        isFinished: false,
+      };
+      const redeemedPromotion: any = {
+        customerId, promotionId
+      };
+      promotionsDao.findById.withArgs("6MonthPurchase").resolves(promotionObj);
+      customersDao.getRelatedRedeemedPromotions.withArgs("123", "6MonthPurchase").resolves([redeemedPromotion]);
+      // act
+      const result = await service.getPetGift(customerId, promotionId);
+      // assert
+      expect(result).to.deep.equal(null);
+    });
+
+    it("should return null when a customer does not meet promotion requirements", async () => {
+      // arrange
+      const customerId = "123";
+      const promotionId = "6MonthPurchase";
+      const promotionObj: any = {
+        isFinished: false,
+        month: 6
+      };
+      promotionsDao.findById.withArgs("6MonthPurchase").resolves(promotionObj);
+      customersDao.getRelatedRedeemedPromotions.withArgs("123", "6MonthPurchase").resolves([]);
+      customersDao.getRelatedPurchases.withArgs("123").resolves([]);
+      // act
+      const result = await service.getPetGift(customerId, promotionId);
+      // assert
+      expect(result).to.deep.equal(null);
+    });
   });
 
-  //return null if the promotion has been redeemed
-  //return null if it does not meet promotion standards
   //if no pets return null
   //return a gift for eligible customers
 });
