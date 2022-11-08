@@ -64,4 +64,19 @@ describe("src :: dao :: customers :: CustomersDAO", () => {
       expect(result).to.deep.equal([]);
     });
   });
+
+  describe("# getRelatedRedeemedPromotions", () => {
+    it("should return redeemedPromotions related to the customer", async () => {
+      // arrange
+      const customerId = "123";
+      const promotionId = "6MonthPurchase";
+      methods.relatedQuery.returnsThis();
+      methods.for.returnsThis();
+      methods.where.resolves([]);
+      // act
+      const result = await dao.getRelatedRedeemedPromotions(customerId, promotionId);
+      // assert
+      expect(result).to.deep.equal([]);
+    });
+  });
 });
