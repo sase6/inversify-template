@@ -1,6 +1,3 @@
-// hasPurchaseOlderThan
-// getPetGift
-
 import chai from "chai";
 import sinon, { SinonStubbedInstance } from "sinon";
 import CustomersDAO from "../../../dao/customers/CustomersDAO";
@@ -25,7 +22,9 @@ describe("src :: service :: customers :: CustomersService", () => {
   let service: Service;
   beforeEach(() => {
     customersDao = sandbox.createStubInstance(CustomersDAO);
+    promotionsDao = sandbox.createStubInstance(PromotionDAO);
     customersDao.getRelatedPurchases = sandbox.stub();
+    promotionsDao.findById = sandbox.stub();
 
 
     service = new Service(customersDao, promotionsDao, redeemedPromotionsDao);
@@ -109,4 +108,24 @@ describe("src :: service :: customers :: CustomersService", () => {
         expect(result).to.deep.equal({date: exampleDate});
       });
   });
+
+  describe("# getPetGift", () => {
+    it("should return null when a promotion doesn't exist", async () => {
+      // arrange
+      const customerId = "123";
+      const fakePromotionId = "2MonthPurchase";
+      promotionsDao.findById.withArgs("2MonthPurchase").resolves(undefined);
+      // act
+      const result = await service.getPetGift(customerId, fakePromotionId);
+      // assert
+      expect(result).to.deep.equal(null);
+    });
+  });
+
+  //return null if promotion doesnt exist 
+  //return null if a promotion has ended
+  //return null if the promotion has been redeemed
+  //return null if it does not meet promotion standards
+  //if no pets return null
+  //return a gift for eligible customers
 });
