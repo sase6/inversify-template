@@ -79,7 +79,7 @@ describe("src :: service :: customers :: CustomersService", () => {
   });
 
   describe("# hasPurchaseOlderThan", () => {
-    it("should return null", async () => {
+    it("should return null when no purchase match requirements", async () => {
       // arrange
       const customerId = "123";
       const date = {year: 0, month: 6, day: 0};
@@ -120,10 +120,40 @@ describe("src :: service :: customers :: CustomersService", () => {
       // assert
       expect(result).to.deep.equal(null);
     });
+
+    it("should return null when a promotion is finished", async () => {
+      // arrange
+      const customerId = "123";
+      const fakePromotionId = "2MonthPurchase";
+      const promotionObj: any = {
+        isFinished: true
+      };
+      promotionsDao.findById.withArgs("2MonthPurchase").resolves(promotionObj);
+      // act
+      const result = await service.getPetGift(customerId, fakePromotionId);
+      // assert
+      expect(result).to.deep.equal(null);
+    });
+
+    it("should return null when a promotion has been redeemed", async () => {
+        // arrange
+        const customerId = "123";
+        const promotionId = "6MonthPurchase";
+        const promotionObj: any = {
+          isFinished: false,
+        };
+        const redeemedPromotion: any = {
+          customerId, promotionId
+        };
+        promotionsDao.findById.withArgs("6MonthPurchase").resolves(promotionObj);
+        customersDao.getRelatedRedeemedPromotions.withArgs("123", "6MonthPurchase").resolves([redeemedPromotion]);
+        // act
+        const result = await service.getPetGift(customerId, promotionId);
+        // assert
+        expect(result).to.deep.equal(null);
+      });
   });
 
-  //return null if promotion doesnt exist 
-  //return null if a promotion has ended
   //return null if the promotion has been redeemed
   //return null if it does not meet promotion standards
   //if no pets return null
