@@ -11,9 +11,10 @@ const sandbox = sinon.createSandbox();
 // limitations with stubbing the Objection.Model instance passed to the DAO
 // for a better test implementation, see Service.test.ts
 interface Methods {
-  getRelatedPurchases: SinonStub<any, Methods>;
-  getRelatedPets: SinonStub<any, Methods>;
-  getRelatedRedeemedPromotions: SinonStub<any, Methods>;
+  relatedQuery: SinonStub<any, Methods>;
+  for: SinonStub<any, Methods>;
+  where: SinonStub<any, Methods>;
+  orderBy: SinonStub<any, Methods>;
 }
 
 describe("src :: dao :: customers :: CustomersDAO", () => {
@@ -22,9 +23,10 @@ describe("src :: dao :: customers :: CustomersDAO", () => {
 
   beforeEach(() => {
     methods = {
-      getRelatedPurchases: sandbox.stub(),
-      getRelatedPets: sandbox.stub(),
-      getRelatedRedeemedPromotions: sandbox.stub(),
+      relatedQuery: sandbox.stub(),
+      for: sandbox.stub(),
+      where: sandbox.stub(),
+      orderBy: sandbox.stub(),
     };
 
     dao = new DAO(methods as any);
@@ -34,17 +36,18 @@ describe("src :: dao :: customers :: CustomersDAO", () => {
     sandbox.reset();
   });
 
-  describe.skip("# getRelatedPurchases", () => {
-    it("should call the getRelatedPurchases function", async () => {
+  describe("# getRelatedPurchases", () => {
+    it("should return purchases related to the customer", async () => {
       // arrange
       const customerId = "123";
-      methods.getRelatedPurchases.resolves([]);
+      methods.relatedQuery.returnsThis();
+      methods.for.returnsThis();
+      methods.where.withArgs("customerId", "123").returnsThis();
+      methods.orderBy.resolves([]);
       // act
       const result = await dao.getRelatedPurchases(customerId);
       // assert
-      console.log(result);
-    //   sandbox.assert.calledOnce(methods.query);
-    //   expect(result).to.deep.equal([]);
+      expect(result).to.deep.equal([]);
     });
   });
 });
