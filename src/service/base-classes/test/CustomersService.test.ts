@@ -50,4 +50,18 @@ describe("src :: service :: customers :: CustomersService", () => {
       expect(result).to.deep.equal([]);
     });
   });
+
+  describe("# getRelatedPets", () => {
+    it("calls DAO with expected method and args", async () => {
+      // arrange
+      const customerId = "123";
+      customersDao.getRelatedPets.withArgs("123").resolves([]);
+      // act
+      const result = await service.getRelatedPets(customerId);
+      // assert
+      sandbox.assert.calledOnce(customersDao.getRelatedPets);
+      sandbox.assert.calledWith(customersDao.getRelatedPets, customerId);
+      expect(result).to.deep.equal([]);
+    });
+  });
 });
