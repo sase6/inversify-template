@@ -169,7 +169,30 @@ describe("src :: service :: customers :: CustomersService", () => {
       // assert
       expect(result).to.deep.equal(null);
     });
+
+    it("should return null when a customer does not have a pet", async () => {
+      // arrange
+      const customerId = "123";
+      const promotionId = "6MonthPurchase";
+      const promotionObj: any = {
+        isFinished: false,
+        month: 6
+      };
+      const relatedPurchase: any = {
+        date: (new Date().setMonth(-7))
+      };
+      promotionsDao.findById.withArgs("6MonthPurchase").resolves(promotionObj);
+      customersDao.getRelatedRedeemedPromotions.withArgs("123", "6MonthPurchase").resolves([]);
+      customersDao.getRelatedPurchases.withArgs("123").resolves([relatedPurchase]);
+      customersDao.getRelatedPets.withArgs("123").resolves([]);
+      // act
+      const result = await service.getPetGift(customerId, promotionId);
+      // assert
+      expect(result).to.deep.equal(null);
+    });
   });
+
+  
 
   //if no pets return null
   //return a gift for eligible customers
