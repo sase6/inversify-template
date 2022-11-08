@@ -64,4 +64,19 @@ describe("src :: service :: customers :: CustomersService", () => {
       expect(result).to.deep.equal([]);
     });
   });
+
+  describe("# getRelatedRedeemedPromotions", () => {
+    it("calls DAO with expected method and args", async () => {
+      // arrange
+      const customerId = "123";
+      const promotionId = "6MonthPurchase";
+      customersDao.getRelatedRedeemedPromotions.withArgs("123", "6MonthPurchase").resolves([]);
+      // act
+      const result = await service.getRelatedRedeemedPromotions(customerId, promotionId);
+      // assert
+      sandbox.assert.calledOnce(customersDao.getRelatedRedeemedPromotions);
+      sandbox.assert.calledWith(customersDao.getRelatedRedeemedPromotions, customerId, promotionId);
+      expect(result).to.deep.equal([]);
+    });
+  });
 });
