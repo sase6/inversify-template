@@ -1,4 +1,3 @@
-// getRelatedRedeemedPromotions
 // hasPurchaseOlderThan
 // getPetGift
 
@@ -78,5 +77,36 @@ describe("src :: service :: customers :: CustomersService", () => {
       sandbox.assert.calledWith(customersDao.getRelatedRedeemedPromotions, customerId, promotionId);
       expect(result).to.deep.equal([]);
     });
+  });
+
+  describe("# hasPurchaseOlderThan", () => {
+    it("should return null", async () => {
+      // arrange
+      const customerId = "123";
+      const date = {year: 0, month: 6, day: 0};
+      customersDao.getRelatedPurchases.withArgs("123").resolves([]);
+      // act
+      const result = await service.hasPurchaseOlderThan(customerId, date);
+      // assert
+      sandbox.assert.calledOnce(customersDao.getRelatedPurchases);
+      expect(result).to.deep.equal(null);
+    });
+
+    it("should return a purchase a customer made more than 6 months ago", async () => {
+        // arrange
+        const customerId = "123";
+        const exampleDate = new Date();
+        const dummyDateObj = {year: 0, month: 6, day: 0};
+        exampleDate.setMonth(-7);
+        const purchaseDate: any = {
+          date: exampleDate
+        };
+        customersDao.getRelatedPurchases.withArgs("123").resolves([purchaseDate]);
+        // act
+        const result = await service.hasPurchaseOlderThan(customerId, dummyDateObj);
+        // assert
+        sandbox.assert.calledOnce(customersDao.getRelatedPurchases);
+        expect(result).to.deep.equal({date: exampleDate});
+      });
   });
 });
