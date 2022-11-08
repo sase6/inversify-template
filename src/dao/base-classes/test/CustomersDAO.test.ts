@@ -50,4 +50,18 @@ describe("src :: dao :: customers :: CustomersDAO", () => {
       expect(result).to.deep.equal([]);
     });
   });
+
+  describe("# getRelatedPets", () => {
+    it("should return purchases related to the customer", async () => {
+      // arrange
+      const customerId = "123";
+      methods.relatedQuery.returnsThis();
+      methods.for.returnsThis();
+      methods.where.resolves([]);
+      // act
+      const result = await dao.getRelatedPets(customerId);
+      // assert
+      expect(result).to.deep.equal([]);
+    });
+  });
 });
