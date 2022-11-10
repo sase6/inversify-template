@@ -52,9 +52,11 @@ export const seed = async (knex: Knex) => {
 
   // promotions
   const promotions = [];
+  let date = new Date();
+  date.setMonth(date.getMonth() - 6);
   promotions.push({
     id: "6MonthPurchase",
-    month: 6
+    date
   });
 
   await knex("promotions").insert(promotions);

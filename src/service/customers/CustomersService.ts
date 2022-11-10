@@ -6,12 +6,6 @@ import PromotionDAO from "../../dao/promotions/PromotionsDAO";
 import RedeemedPromotionDAO from "../../dao/promotions/RedeemedPromotionsDAO";
 import Customer from "../../model/Customer";
 
-interface promotionDate {
-  year: number;
-  month: number;
-  day: number;
-};
-
 @injectable()
 class CustomersService extends Service<Customer> {
   constructor(protected readonly _customersDAO: CustomersDAO, protected readonly _promotionsDAO: PromotionDAO, protected readonly _redeemedPromotionsDAO: RedeemedPromotionDAO) {
@@ -32,16 +26,11 @@ class CustomersService extends Service<Customer> {
     return this._customersDAO.getRelatedRedeemedPromotions(customerId, promotionId);
   }
 
-  async hasPurchaseOlderThan(customerId: string, date: promotionDate) {
-    const currentDate = new Date();
-    currentDate.setFullYear(currentDate.getFullYear() - date.year);
-    currentDate.setMonth(currentDate.getMonth() - date.month);
-    // currentDate.setMonth(currentDate.getDay() - date.day); // How to set day?
-    
+  async hasPurchaseOlderThan(customerId: string, date: Date) {
     const purchases: any = await this.getRelatedPurchases(customerId);
     for (let i=0; i < purchases.length; i++) {
       const purchase: any = purchases[i];
-      if (new Date(purchase.date) <= currentDate) return purchase;
+      if (new Date(purchase.date) <= date) return purchase;
     }
     return null;
   }
@@ -49,11 +38,7 @@ class CustomersService extends Service<Customer> {
   async getPetGift(customerId: string, promotionId: string) {
     const promotion: any | undefined = await this._promotionsDAO.findById(promotionId);
     if (promotion === undefined || promotion.isFinished) return null;
-    const date: promotionDate = {
-      year: promotion.year || 0,
-      month: promotion.month || 0,
-      day: promotion.day || 0,
-    }
+    const date = promotion.date;
 
     const redeemedPromotions: any = await this.getRelatedRedeemedPromotions(customerId, promotionId);
     if (redeemedPromotions.length !== 0) return null;
