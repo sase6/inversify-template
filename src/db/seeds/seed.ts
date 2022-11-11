@@ -7,6 +7,7 @@ export const seed = async (knex: Knex) => {
   await knex.raw("truncate table customers restart identity cascade"); 
   await knex.raw("truncate table pets restart identity cascade");
   await knex.raw("truncate table purchases restart identity cascade");
+  await knex.raw("truncate table promotions restart identity cascade");
 
   // customers
   const customers = [];
@@ -48,4 +49,15 @@ export const seed = async (knex: Knex) => {
   }
 
   await knex("purchases").insert(purchases);
+
+  // promotions
+  const promotions = [];
+  let date = new Date();
+  date.setMonth(date.getMonth() - 6);
+  promotions.push({
+    id: "6MonthPurchase",
+    date
+  });
+
+  await knex("promotions").insert(promotions);
 };

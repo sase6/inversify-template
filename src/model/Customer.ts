@@ -1,6 +1,7 @@
 import { Model } from "objection";
 import Pet from "./Pet";
 import Purchase from "./Purchase";
+import RedeemedPromotion from "./RedeemedPromotion";
 
 class Customer extends Model {
   // Table name is the only required property.
@@ -47,6 +48,15 @@ class Customer extends Model {
           to: "purchases.customerId",
         },
       },
+
+      redeemed_promotions: {
+        relation: Model.HasManyRelation,
+        modelClass: RedeemedPromotion,
+        join: {
+          from: "customers.id",
+          to: "redeemed_promotions.customerId"
+        }
+      }
     };
   }
 }
