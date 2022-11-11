@@ -22,8 +22,7 @@ class CustomersController {
 
   async getPetGift(req: Request, res: Response, next: NextFunction) {
     try {
-      const { customerId } = req.params; 
-      const promotionId = "6MonthPurchase";
+      const { customerId, promotionId } = req.params; 
       const result = await this._service.getPetGift(customerId, promotionId);
       return res.status(200).json(result);
     } catch (e: unknown) {
