@@ -5,9 +5,7 @@ export const up = async (knex: Knex) => {
     table.string("id");
     table.timestamps(true, true);
     table.boolean("isFinished").defaultTo(false);
-    table.integer("year").defaultTo(0);
-    table.integer("month").defaultTo(0);
-    table.integer("day").defaultTo(0);
+    table.date("date");
   });
 };
 
