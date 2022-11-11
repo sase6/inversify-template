@@ -36,6 +36,11 @@ class CustomersService extends Service<Customer> {
   }
 
   async getPetGift(customerId: string, promotionId: string) {
+    const isValidUUID = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+    if (!isValidUUID.test(customerId)) return null;
+    const customer = await this.findById(customerId);
+    if (customer === undefined) return null;
+
     const promotion: any | undefined = await this._promotionsDAO.findById(promotionId);
     if (promotion === undefined || promotion.isFinished) return null;
     const date = promotion.date;
@@ -56,7 +61,8 @@ class CustomersService extends Service<Customer> {
       });
 
       return {
-        gift: `${randomPet.species} Gift for ${randomPet.name}`
+        gift: `${randomPet.species} Gift for ${randomPet.name}`,
+        message: `Thank you for your purchase on ${purchase.date}!`,
       };
     }
     return null;
